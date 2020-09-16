@@ -10,19 +10,25 @@
             // Create the new camping item
             let newCampItem = component.get("v.newItem");
             console.log("Create camping item: " + JSON.stringify(newCampItem));
-            //helper.createExpense(component, newCampItem);
-          			//helper code below  
-          	let theItems = component.get("v.items");
-          	// Copy the expense to a new object
-          	// THIS IS A DISGUSTING, TEMPORARY HACK
-          	//let newExpense = JSON.parse(JSON.stringify(expense));
-          	theItems.push(newCampItem);
-          	component.set("v.items", theItems);
-            component.set("v.newItem", {'sobjectType':'Camping_Item__c',
-                                               'Name': '',
-                                        'Quantity__c': 0,
-                                           'Price__c': 0,
-                                          'Packed__c': false});
+            helper.createItem(component, newCampItem);
+
         }		
-	}
+	},
+        // Load items from Salesforce
+    doInit: function(component, event, helper) {
+        // Create the action
+        let action = component.get("c.getItems");
+        // Add callback behavior for when response is received
+        action.setCallback(this, function(response) {
+            let state = response.getState();
+            if (state === "SUCCESS") {
+                component.set("v.items", response.getReturnValue());
+            }
+            else {
+                console.log("Failed with state: " + state);
+            }
+        });
+        // Send action off to be executed
+        $A.enqueueAction(action);
+    },
 })
