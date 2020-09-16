@@ -1,0 +1,4 @@
+<aura:component>
+    <c:helloHeading/>
+	<p> Voilà! Apex is cool and this file is from the Org</p>
+</aura:component>
