@@ -1,19 +1,19 @@
 ({
-	clickCreateItem : function(component, event, helper) {
-        let validItem = component.find('itemform').reduce(function (validSoFar, inputCmp) {
-            // Displays error messages for invalid fields
-            inputCmp.showHelpMessageIfInvalid();
-            return validSoFar && inputCmp.get('v.validity').valid;
-        }, true);
-        // If we pass error checking, do some real work
-        if(validItem){
-            // Create the new camping item
-            let newCampItem = component.get("v.newItem");
-            console.log("Create camping item: " + JSON.stringify(newCampItem));
-            helper.createItem(component, newCampItem);
-
-        }		
-	},
+    handleAddItem: function(component, event, helper) {
+        let newCampItem = event.getParam("item");
+        //helper.createItem(component, newCampItem);
+        let action = component.get("c.saveItem");
+        action.setParams({ "item": newCampItem });
+        action.setCallback(this, function(response){
+            let state = response.getState();
+            if (state === "SUCCESS") {
+                let items = component.get("v.items");
+                items.push(response.getReturnValue());
+                component.set("v.items", items);
+            }
+        });
+        $A.enqueueAction(action);
+    },
         // Load items from Salesforce
     doInit: function(component, event, helper) {
         // Create the action
